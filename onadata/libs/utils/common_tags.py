@@ -158,3 +158,11 @@ MEMBERS = 'members'
 XLS_DATE_FIELDS = ['date', 'today']
 SUBMISSION_REVIEW = 'submission_review'
 XLS_DATETIME_FIELDS = ['start', 'end', 'dateTime', '_submission_time']
+FLOIP_FILTER_MAP = {
+    "filter[max-version]": "version__lte",
+    "filter[min-version]": "version__gte",
+    "filter[start-timestamp]": "date_created__gte",
+    "filter[end-timestamp]": "date_created__lte",
+    "page[afterCursor]": "id__gte",
+    "page[beforeCursor]": "id__lte",
+}
