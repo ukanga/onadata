@@ -571,3 +571,4 @@ SECRET_KEY = 'mlfs33^s1l4xf6a36$0#j%dd*sisfoi&)&4s-v=91#^l01v)*j'
 LOCKOUT_TIME = 30 * 60
 MAX_LOGIN_ATTEMPTS = 10
 SUPPORT_EMAIL = "support@example.com"
+FULL_MESSAGE_PAYLOAD = False
