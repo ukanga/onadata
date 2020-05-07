@@ -5,6 +5,7 @@ FloipSerializer module.
 """
 import json
 import os
+import uuid
 from copy import deepcopy
 from io import BytesIO
 
@@ -78,6 +79,30 @@ def parse_responses(responses, session_id_index=SESSION_ID_INDEX,
     yield submission
 
 
+class UUIDField(serializers.CharField):
+    """
+    Custom UUIDField that stores the values of a UUID as hex but
+    represents the as a complete UUID4 string
+    """
+    def to_representation(self, obj):  # pylint: disable=no-self-use
+        return str(uuid.UUID(obj))
+
+    def to_internal_value(self, obj):  # pylint: disable=no-self-use
+        try:
+            val = uuid.UUID(obj).hex
+            return val
+        except TypeError:
+            raise serializers.ValidationError('Invalid uuid')
+
+
+class ReadOnlyUUIDField(serializers.ReadOnlyField):
+    """
+    Custom ReadOnlyField for UUID
+    """
+    def to_representation(self, obj):  # pylint: disable=no-self-use
+        return str(uuid.UUID(obj))
+
+
 # pylint: disable=too-many-ancestors
 class FloipListSerializer(serializers.HyperlinkedModelSerializer):
     """
@@ -85,7 +110,7 @@ class FloipListSerializer(serializers.HyperlinkedModelSerializer):
     """
     url = serializers.HyperlinkedIdentityField(
         view_name='flow-results-detail', lookup_field='uuid')
-    id = serializers.ReadOnlyField(source='uuid')  # pylint: disable=C0103
+    id = ReadOnlyUUIDField(source='uuid')  # pylint: disable=invalid-name
     name = serializers.ReadOnlyField(source='id_string')
     created = serializers.ReadOnlyField(source='date_created')
     modified = serializers.ReadOnlyField(source='date_modified')
@@ -108,6 +133,7 @@ class FloipSerializer(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name='floip-detail', lookup_field='pk')
     profile = serializers.SerializerMethodField()
+    id = UUIDField(max_length=36, min_length=32, allow_null=True)
     created = serializers.ReadOnlyField(source='date_created')
     modified = serializers.ReadOnlyField(source='date_modified')
     # pylint: disable=invalid-name
@@ -150,6 +176,8 @@ class FloipSerializer(serializers.HyperlinkedModelSerializer):
         data = deepcopy(request.data)
         if 'profile' in data and data['profile'] == 'flow-results-package':
             data['profile'] = 'data-package'
+        if 'id' in data and data['id']:
+            data['id'] = UUIDField().to_internal_value(data['id'])
         descriptor = BytesIO(json.dumps(data).encode('utf-8'))
         descriptor.seek(0, os.SEEK_END)
         floip_file = InMemoryUploadedFile(
@@ -186,8 +214,9 @@ class FloipSerializer(serializers.HyperlinkedModelSerializer):
 
     def to_representation(self, instance):
         request = self.context['request']
+        data_id = str(uuid.UUID(instance.uuid))
         data_url = request.build_absolute_uri(
-            reverse('flow-results-responses', kwargs={'uuid': instance.uuid}))
+            reverse('flow-results-responses', kwargs={'uuid': data_id}))
         package = survey_to_floip_package(
             json.loads(instance.json), instance.uuid, instance.date_created,
             instance.date_modified, data_url)
@@ -218,7 +247,7 @@ class FlowResultsResponseSerializer(serializers.Serializer):
     FlowResultsResponseSerializer for handling publishing of Flow Results
     Response package.
     """
-    id = serializers.CharField()  # pylint: disable=invalid-name
+    id = UUIDField(max_length=36, min_length=32)
     responses = serializers.ListField()
     duplicates = serializers.IntegerField(read_only=True)
 
