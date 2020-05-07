@@ -5,12 +5,12 @@ Model utility functions.
 from onadata.libs.utils.common_tools import get_uuid
 
 
-def set_uuid(obj):
+def set_uuid(obj, hex_values=True):
     """
     Only give an object a new UUID if it does not have one.
     """
     if not obj.uuid:
-        obj.uuid = get_uuid()
+        obj.uuid = get_uuid(hex_values)
 
 
 def queryset_iterator(queryset, chunksize=100):

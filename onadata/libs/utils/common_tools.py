@@ -48,11 +48,15 @@ def get_boolean_value(str_var, default=None):
     return str_var if default else False
 
 
-def get_uuid():
+def get_uuid(hex_values=True):
     '''
     Return UUID4 hex value
+
+    :param bool hex_values: Boolean flag that determines whether the
+                            function should return only hex values for uuid
     '''
-    return uuid.uuid4().hex
+    val = uuid.uuid4()
+    return val.hex if hex_values else val
 
 
 def report_exception(subject, info, exc_info=None):
