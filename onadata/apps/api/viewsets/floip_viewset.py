@@ -97,8 +97,9 @@ class FloipViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         """
         status_code = status.HTTP_200_OK
         xform = self.get_object()
+        data_id = uu.UUID(uuid or xform.uuid)
         data = {
-            "id": uuid or xform.uuid,
+            "id": data_id,
             "type": "flow-results-data",
             "attributes": {}
         }
