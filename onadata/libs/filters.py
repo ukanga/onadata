@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
@@ -31,6 +33,10 @@ class AnonDjangoObjectPermissionFilter(ObjectPermissionsFilter):
 
         if form_id and lookup_field == 'pk':
             int_or_parse_error(form_id, u'Invalid form ID: %s')
+
+        if form_id and lookup_field == 'uuid':
+            form_id = uuid.UUID(form_id).hex
+
         if form_id:
             xform_kwargs = {lookup_field: form_id}
             # check if form is public and return it

@@ -2,7 +2,9 @@
 """
 FloipViewSet: API endpoint for /api/floip
 """
+import uuid as uu
 
+from django.shortcuts import get_object_or_404
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -76,6 +78,17 @@ class FloipViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
             reverse('flow-results-detail', kwargs={'uuid': data['id']}))
 
         return headers
+
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+        uuid_value = uu.UUID(self.kwargs[self.lookup_field]).hex
+        filter_kwargs = {self.lookup_field: uuid_value}
+        obj = get_object_or_404(queryset, **filter_kwargs)
+        self.check_object_permissions(self.request, obj)
+
+        if self.request.user.is_anonymous and obj.require_auth:
+            self.permission_denied(self.request)
+        return obj
 
     @action(methods=['GET', 'POST'], detail=True)
     def responses(self, request, uuid=None):
