@@ -74,8 +74,9 @@ class FloipViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
     def get_success_headers(self, data):
         headers = super(FloipViewSet, self).get_success_headers(data)
         headers['Content-Type'] = 'application/vnd.api+json'
+        uuid = str(uu.UUID(data['id']))
         headers['Location'] = self.request.build_absolute_uri(
-            reverse('flow-results-detail', kwargs={'uuid': data['id']}))
+            reverse('flow-results-detail', kwargs={'uuid': uuid}))
 
         return headers
 
@@ -99,14 +100,15 @@ class FloipViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         xform = self.get_object()
         data_id = uu.UUID(uuid or xform.uuid)
         data = {
-            "id": data_id,
+            "id": str(data_id),
             "type": "flow-results-data",
             "attributes": {}
         }
         headers = {
             'Content-Type': 'application/vnd.api+json',
             'Location': self.request.build_absolute_uri(
-                reverse('flow-results-responses', kwargs={'uuid': xform.uuid}))
+                reverse(
+                    'flow-results-responses', kwargs={'uuid': str(data_id)}))
         }  # yapf: disable
         if request.method == 'POST':
             serializer = FlowResultsResponseSerializer(

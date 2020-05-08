@@ -70,7 +70,7 @@ class TestFloipViewSet(TestAbstractViewSet):
                                        test=False)
         self.assertEqual(
             response['text'],
-            'An xform with uuid: ee21fa6f-3027-4bdd-a534-1bb324782b6f already'
+            'An xform with uuid: ee21fa6f30274bdda5341bb324782b6f already'
             ' exists')
         self.assertEqual(xforms + 1, XForm.objects.count())
 
