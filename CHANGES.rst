@@ -3,6 +3,25 @@ Changelog for Onadata
 
 ``* represents releases that introduce new migrations``
 
+v2.3.3(2020-05-19)
+------------------
+
+- Fix an issue where file attachments/uploads were automatically soft-deleted
+  `PR #1816 <https://github.com/onaio/onadata/pull/1816>`_
+  [@DavisRayM]
+- Cache projects after creation and retrieve the project from cache in subsequent requests
+  `PR #1819 <https://github.com/onaio/onadata/pull/1819>`_
+  [@DavisRayM]
+- Fix an issue where anonymous submissions from Enketo would fail
+  `PR #1825 <https://github.com/onaio/onadata/pull/1825>`_
+  [@WinnyTroy]
+- Add a management command that deletes users
+  `PR #1717 <https://github.com/onaio/onadata/pull/1717>`_
+  [@WinnyTroy]
+- Ensure that authenticated users cn only submit to forms they have access to
+  `PR #1804 <https://https://github.com/onaio/onadata/pull/1804>`_
+  [@DavisRayM]
+
 v2.3.2(2020-05-05)
 ------------------
 
